@@ -1,0 +1,17 @@
+uint32 timeout_secs
+
+# name of the behavior to be executed
+string behavior_name
+
+# optional list of behavior parameters
+string[] arg_keys
+string[] arg_values
+
+# optional list of initial userdata
+string[] input_keys
+string[] input_values
+
+# optional path string to load behavior from configuration file (if this is set, the rest will be ignored)
+string yaml_path
+---
+string info_msg

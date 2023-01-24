@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<launch>
+
+        <!-- Behavior request arguments -->
+        <arg name="behavior_name" default="repeat_robot_path_procedure" />
+        <arg name="behavior_config_file" default="$(find vinebot_configurations)/configs/behaviors/repeat_robot_path_procedure.yaml" />
+
+        <!-- If the user wishes to listen to feedback of the FSM, can listen to flexbe/debug/current_state topic -->
+        <node name="behavior_mirror" pkg="flexbe_mirror" type="behavior_mirror_sm" output="screen" />
+
+        <!-- Make the behavior required, when finished shutsdown the whole launch -->
+        <node pkg="flexbe_widget_additions" type="start_stop_node_action_client.py" name="start_stop_client" output="screen" required="true">
+            <param name="behavior_name" value="$(arg behavior_name)"/>
+            <rosparam if="$(eval behavior_config_file!='')" subst_value="true" command="load" file="$(arg behavior_config_file)" />
+        </node>
+
+</launch>

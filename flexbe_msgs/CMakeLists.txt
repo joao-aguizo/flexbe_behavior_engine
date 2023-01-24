@@ -31,6 +31,10 @@ add_action_files(FILES
   BehaviorExecution.action
   BehaviorSynthesis.action
 )
+add_service_files(
+  FILES
+  RequestBehavior.srv
+)
 #add_action_files(FILES ...)
 # opt arg DEPENDENCIES ...
 generate_messages(DEPENDENCIES actionlib_msgs)

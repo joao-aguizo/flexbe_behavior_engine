@@ -1,0 +1,10 @@
+# Flexbe parameters
+args:
+  arg_a: hello from porto
+  arg_b: goodbye from porto
+
+
+# Flexbe input keys
+inputs:
+  input_a: hello
+  input_b: world

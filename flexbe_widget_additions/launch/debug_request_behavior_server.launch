@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <group ns="$(env ROBOT)">
+
+        <node pkg="flexbe_widget_additions" type="request_behavior_server.py" name="request_behavior_server" output="screen"/>
+
+    </group>
+
+</launch>

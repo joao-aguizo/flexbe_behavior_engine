@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <!-- Defines wether the launch should activate user input or not (true /// false) -->
+    <!-- <arg name="input_enabled" default="false"/> -->
+
+    <!-- Behavior request arguments -->
+    <arg name="behavior_name" default="Example Behavior" />
+    <arg name="behavior_config_file" default="" />
+
+    <!-- If the user wishes to listen to feedback of the FSM, can listen to flexbe/debug/current_state topic -->
+    <!-- <node name="behavior_mirror" pkg="flexbe_mirror" type="behavior_mirror_sm" output="screen" /> -->
+
+    <!-- Make the behavior required, when finished shutsdown the whole launch -->
+    <node pkg="flexbe_widget_additions" type="be_action_client.py" name="be_action_client" output="screen" required="true">
+        <param name="behavior_name" value="$(arg behavior_name)"/>
+        <rosparam if="$(eval behavior_config_file!='')" subst_value="true" command="load" file="$(arg behavior_config_file)" />
+    </node>
+
+    <!-- To allow user input on behaviors through the terminal -->
+    <!-- <node if="$(eval input_enabled==true)" pkg="flexbe_input" type="behavior_input" name="behavior_input" output="screen"/> -->
+    <!-- <node if="$(eval input_enabled==true)" pkg="flexbe_widget_additions" type="operator_input_action_server.py" name="operator_input_action_server" output="screen"/> -->
+
+</launch>
