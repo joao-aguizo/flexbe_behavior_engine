@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import sys
 import rospy
 import actionlib
 import pickle
@@ -48,7 +49,11 @@ class OperatorInputActionServer(object):
             question = goal.msg
 
         # Gathers the user input
-        input_data = raw_input(question)
+        if sys.version_info[0] == 2:
+            input_data = raw_input(question)
+        else:
+            input_data = input(question)
+
         data = input_data   # this works for the default case of request_type == 0
 
         # Answer analysis 
@@ -79,9 +84,15 @@ class OperatorInputActionServer(object):
                     result_code = 1
 
 
-        # The pickle dumps is mandatory, since the input state executes pickle.loads()
+        # Python 2: the pickle dumps is mandatory, since the input state executes pickle.loads().
+        # Ptyhon 3: pickle.dumps() returns a byte-like object, instead of a string (python 2).
+        #           Rospy attempts to encode the message, which leads to an error.
         self._result.result_code = result_code
-        self._result.data = pickle.dumps(data)
+        if sys.version_info[0] == 2:
+            self._result.data = pickle.dumps(data)
+        else:
+            self._result.data = data
+
         self._as.set_succeeded(self._result)
         
 

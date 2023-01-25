@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import pickle
+import sys
 
 from flexbe_core import EventState, Logger
 from flexbe_msgs.msg import BehaviorInputAction, BehaviorInputGoal, BehaviorInputResult
@@ -49,7 +50,11 @@ class InputState(EventState):
                 return 'aborted'
             else:
                 try:
-                    response_data = pickle.loads(result.data)
+                    if sys.version_info[0] == 2:
+                        response_data = pickle.loads(result.data)
+                    else:
+                        response_data = result.data
+
                     userdata.data = response_data
                 except Exception as e:
                     Logger.logwarn('Was unable to load provided data:\n%s' % str(e))
