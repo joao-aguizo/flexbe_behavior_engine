@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from flexbe_core import EventState, Logger
+from roslib.message import get_message_class
 from flexbe_core.proxy import ProxyActionClient
 
 
@@ -9,6 +10,7 @@ Created on 22/11/2021
 
 @author: Joao Aguizo
 """
+
 
 class ActionSendGoal(EventState):
     """
@@ -26,26 +28,26 @@ class ActionSendGoal(EventState):
     <= failed                   Navigation send goal failed.
     """
 
-    def __init__(self, action_class, action_goal_class, topic="action", input_keys=[], is_pausable = True, cancel_active_goal=False):
+    def __init__(self, action="actionlib_tutorials/Fibonacci", topic="fibonacci", input_keys=[], is_pausable=True, cancel_active_goal=False):
 
         super(ActionSendGoal, self).__init__(
-            outcomes = ['goal_sent', 'goal_active', 'failed'],
-            input_keys = input_keys
+            outcomes=['goal_sent', 'goal_active', 'failed'],
+            input_keys=input_keys
         )
 
-        self._goal = action_goal_class()
         self._action_topic = topic
         self._input_keys = input_keys
         self._is_pausable = is_pausable
         self._cancel_active_goal = cancel_active_goal
 
+        action_class = get_message_class(action + "Action")
         self._client = ProxyActionClient({self._action_topic: action_class})
+        self._action_goal_class = get_message_class(action + "Goal")
 
         self._failed = False
         self._goal_active = False
         self._on_pause_cancelled = False
         self._sent_goal = None
-
 
     def send_goal(self, goal):
         failed = False
@@ -58,7 +60,6 @@ class ActionSendGoal(EventState):
 
         return failed
 
-
     def cancel_active_goals(self):
         cancelled = False
         if self._client.is_available(self._action_topic):
@@ -70,18 +71,16 @@ class ActionSendGoal(EventState):
 
         return cancelled
 
-
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
         if self._failed:
             return 'failed'
-        
+
         if self._goal_active:
             return 'goal_active'
 
         return 'goal_sent'
-
 
     def on_enter(self, userdata):
         """Create and send action goal"""
@@ -99,25 +98,23 @@ class ActionSendGoal(EventState):
                     return
 
         # Populate action goal
+        goal = self._action_goal_class()
         for key in self._input_keys:
             try:
-                setattr(self._goal, key, getattr(userdata, key))
+                setattr(goal, key, getattr(userdata, key))
             except AttributeError as e:
                 Logger.logwarn("Invalid attempt of set attribute on class:\n{}".format(str(e)))
 
         # Send the action goal for execution
-        self._failed = self.send_goal(self._goal)
-
+        self._failed = self.send_goal(goal)
 
     def on_resume(self, userdata):
         if self._on_pause_cancelled and self._sent_goal:
-            self.send_goal(self._sent_goal) # resend the previous goal
-
+            self.send_goal(self._sent_goal)  # resend the previous goal
 
     def on_pause(self, userdata):
         if self._is_pausable:
             self._on_pause_cancelled = self.cancel_active_goals()
-
 
     def on_stop(self):
         _ = self.cancel_active_goals()

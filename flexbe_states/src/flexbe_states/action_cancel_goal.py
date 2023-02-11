@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from flexbe_core import EventState, Logger
+from roslib.message import get_message_class
 from flexbe_core.proxy import ProxyActionClient
 
 """
@@ -18,11 +19,12 @@ class ActionCancelGoal(EventState):
     <= failed                       Navigation cancel goal failed.
     """
 
-    def __init__(self, action_class, topic="action"):
+    def __init__(self, action="actionlib_tutorials/Fibonacci", topic="fibonacci"):
 
         super(ActionCancelGoal, self).__init__(outcomes = ['goal_cancelled', 'inactive', 'failed'])
 
         self._action_topic = topic
+        action_class = get_message_class(action + "Action")
         self._client = ProxyActionClient({self._action_topic: action_class})
         self._failed = False
         self._inactive = False
