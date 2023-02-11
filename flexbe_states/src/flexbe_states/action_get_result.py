@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from flexbe_core import EventState, Logger
+from roslib.message import get_message_class
 from flexbe_core.proxy import ProxyActionClient
 
 """
@@ -19,7 +20,7 @@ class ActionGetResult(EventState):
     <= failed                   Could not retrieve feedback from server.
     """
 
-    def __init__(self, action_class, topic="action", output_keys = [], clear_result = True):
+    def __init__(self, action="actionlib_tutorials/Fibonacci", topic="fibonacci", output_keys = [], clear_result = True):
 
         super(ActionGetResult, self).__init__(
             outcomes = ['goal_no_result', 'goal_has_result', 'failed'],
@@ -28,6 +29,7 @@ class ActionGetResult(EventState):
 
         self._action_topic = topic
         self._output_keys = output_keys
+        action_class = get_message_class(action + "Action")
         self._client = ProxyActionClient({self._action_topic: action_class})
         self._clear_result = clear_result
         self._failed = False

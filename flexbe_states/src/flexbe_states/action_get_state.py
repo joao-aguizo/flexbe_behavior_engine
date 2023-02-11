@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from flexbe_core import EventState, Logger
+from roslib.message import get_message_class
 from flexbe_core.proxy import ProxyActionClient
 from actionlib_msgs.msg import GoalStatus
 
@@ -9,6 +10,7 @@ Created on 12/08/2021
 
 @author: Joao Aguizo
 """
+
 
 class ActionGetState(EventState):
     """
@@ -23,30 +25,29 @@ class ActionGetState(EventState):
     <= failed                   Failed to retrieve result.
     """
 
-    def __init__(self, topic, action_class):
+    def __init__(self, topic="fibonacci", action="actionlib_tutorials/Fibonacci"):
         """Constructor"""
 
-        super(ActionGetState, self).__init__(outcomes = 
-            [
-                'PENDING', 
-                'ACTIVE', 
-                'PREEMPTED', 
-                'SUCCEEDED', 
-                'ABORTED', 
-                'REJECTED', 
-                'PREEMPTING', 
-                'RECALLING', 
-                'RECALLED', 
-                'LOST', 
-                'failed'
-            ],
-            output_keys = ['goal_status'])
+        super(ActionGetState, self).__init__(outcomes=[
+            'PENDING',
+            'ACTIVE',
+            'PREEMPTED',
+            'SUCCEEDED',
+            'ABORTED',
+            'REJECTED',
+            'PREEMPTING',
+            'RECALLING',
+            'RECALLED',
+            'LOST',
+            'failed'
+        ],
+            output_keys=['goal_status'])
 
         self._action_topic = topic
+        action_class = get_message_class(action + "Action")
         self._client = ProxyActionClient({self._action_topic: action_class})
         self._status = GoalStatus.PENDING
         self._failed = False
-
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
@@ -72,9 +73,8 @@ class ActionGetState(EventState):
             return 'RECALLING'
         elif self._status == GoalStatus.RECALLED:
             return 'RECALLED'
-        else: # elif self._status == GoalStatus.LOST:
+        else:  # elif self._status == GoalStatus.LOST:
             return 'LOST'
-
 
     def on_enter(self, userdata):
         """Try to get the result"""

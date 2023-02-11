@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from flexbe_core import EventState, Logger
+from roslib.message import get_message_class
 from flexbe_core.proxy import ProxyActionClient
 
 """
@@ -8,6 +9,7 @@ Created on 22/11/2021
 
 @author: Joao Aguizo
 """
+
 
 class ActionGetFeedback(EventState):
     """
@@ -19,20 +21,20 @@ class ActionGetFeedback(EventState):
     <= failed                   Could not retrieve feedback from server.
     """
 
-    def __init__(self, action_class, topic="action", output_keys=[], clear_feedback = True):
+    def __init__(self, action="actionlib_tutorials/Fibonacci", topic="fibonacci", output_keys=[], clear_feedback=True):
 
         super(ActionGetFeedback, self).__init__(
-            outcomes = ['goal_no_feedback', 'goal_has_feedback', 'failed'],
-            output_keys = output_keys
+            outcomes=['goal_no_feedback', 'goal_has_feedback', 'failed'],
+            output_keys=output_keys
         )
 
         self._action_topic = topic
+        action_class = get_message_class(action + "Action")
         self._client = ProxyActionClient({self._action_topic: action_class})
         self._output_keys = output_keys
         self._clear_feedback = clear_feedback
         self._failed = False
         self._has_feedback = False
-
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
@@ -44,7 +46,6 @@ class ActionGetFeedback(EventState):
             return 'goal_has_feedback'
         else:
             return 'goal_no_feedback'
-
 
     def on_enter(self, userdata):
         """Try to get the feedback of an active goal (if any)"""
@@ -69,7 +70,7 @@ class ActionGetFeedback(EventState):
 
                 if self._clear_feedback:
                     self._client.remove_feedback(self._action_topic)
-            
+
             else:
                 self._has_feedback = False
 
