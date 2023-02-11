@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from flexbe_core import EventState, Logger
+from roslib.message import get_service_class
 from flexbe_core.proxy import ProxyServiceCaller
 
 
@@ -17,15 +18,17 @@ class ServiceRequestState(EventState):
 
     '''
 
-    def __init__(self, service_class, service_request_class, input_keys = [], output_keys = [], topic = "service", timeout = 5):
+    def __init__(self, service="rospy_tutorials/AddTwoInts", input_keys = [], output_keys = [], topic = "add_two_ints", timeout = 5):
         super(ServiceRequestState, self).__init__(
             outcomes = ['done', 'command_error'],
             input_keys = input_keys,
             output_keys = output_keys 
         )
 
+        service_class = get_service_class(service)
+        self._request_class = service_class._request_class
+
         self._topic_name = topic
-        self._request = service_request_class()
         self._input_keys = input_keys
         self._output_keys = output_keys
         self._proxy_caller = ProxyServiceCaller(topics = {self._topic_name : service_class}, wait_duration = timeout)
@@ -45,13 +48,14 @@ class ServiceRequestState(EventState):
 
         try:
             # Populate action goal
+            request = self._request_class()
             for key in self._input_keys:
                 try:
-                    setattr(self._request, key, getattr(userdata, key))
+                    setattr(request, key, getattr(userdata, key))
                 except AttributeError as e:
                     Logger.logwarn("Invalid attempt of set attribute on class:\n{}".format(str(e)))
 
-            response = self._proxy_caller.call(self._topic_name, self._request)
+            response = self._proxy_caller.call(self._topic_name, request)
 
             # Get result attributes based on the output keys
             for key in self._output_keys:
