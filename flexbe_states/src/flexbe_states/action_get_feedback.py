@@ -13,12 +13,16 @@ Created on 22/11/2021
 
 class ActionGetFeedback(EventState):
     """
-    Move base flex action state to retrieve the feedback of the running goal.
+    Generic state to retrieve the feedback of a running goal in a ROS action server.
 
-    #> current_pose     PoseStamped     The current pose of the robot.
+    -- action          string              The action class type name.
+    -- topic           string              The action topic name.
+    -- output_keys     string[]            The custom output keys. These should match the action feedback properties.
+    -- clear_feedback  bool                Whether to clear the last feedback or not.
 
+    <= goal_no_feedback         There is not any feedback to retrieve.
     <= goal_has_feedback        Retrieved the feedback.
-    <= failed                   Could not retrieve feedback from server.
+    <= failed                   Failed to retrieve feedback from server.
     """
 
     def __init__(self, action="actionlib_tutorials/Fibonacci", topic="fibonacci", output_keys=[], clear_feedback=True):

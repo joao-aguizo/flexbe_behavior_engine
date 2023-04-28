@@ -12,11 +12,14 @@ Created on 22/11/2021
 
 class ActionCancelGoal(EventState):
     """
-    Move base flex action state to cancel active goals.
+    Generic state to cancel active goals on a ROS action server.
 
-    <= goal_cancelled               The goal was cancelled.
-    <= inactive                     There are not any active goals.
-    <= failed                       Navigation cancel goal failed.
+    -- action          string              The action class type name.
+    -- topic           string              The action topic name.
+
+    <= goal_cancelled   The goal was cancelled.
+    <= inactive         There are not any active goals.
+    <= failed           Failed to cancel goal.
     """
 
     def __init__(self, action="actionlib_tutorials/Fibonacci", topic="fibonacci"):

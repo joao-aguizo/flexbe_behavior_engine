@@ -14,15 +14,24 @@ Created on 12/08/2021
 
 class ActionGetState(EventState):
     """
-    Move base flex action state to get result.
+    Generic state to get the current state of a given goal running on a ROS action server.
 
-    #> result     actionlib_msgs/GoalStatus     The result of the current goal.
+    -- action          string              The action class type name.
+    -- topic           string              The action topic name.
 
-    <= goal_result_succeeded    Navigation to target pose succeeded.
-    <= goal_result_aborted      Navigation to target pose aborted.
-    <= goal_has_feedback        The goal still is active, has feedback.
-    <= inactive                 The server is inactive.
-    <= failed                   Failed to retrieve result.
+    #> goal_status     actionlib_msgs/GoalStatus     The result of the current goal.
+
+    <= PENDING
+    <= ACTIVE
+    <= PREEMPTED
+    <= SUCCEEDED
+    <= ABORTED
+    <= REJECTED
+    <= PREEMPTING
+    <= RECALLING
+    <= RECALLED
+    <= LOST
+    <= failed       Failed to get the action server's current state.
     """
 
     def __init__(self, topic="fibonacci", action="actionlib_tutorials/Fibonacci"):

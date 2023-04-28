@@ -14,18 +14,17 @@ Created on 22/11/2021
 
 class ActionSendGoal(EventState):
     """
-    Generic action send goal state.
+    Generic state to send goal to a ROS action server.
 
-    -- action_class                 ActionType          The action type class.
-    -- action_goal_class            ActionTypeGoal      The action instatiable goal class.  
+    -- action                       string              The action class type name.
     -- topic                        string              The action topic name.
     -- input_keys                   string[]            The custom input keys. These should match the action goal properties.
     -- is_pausable                  bool                Is the action pausable on a priority interruption?
     -- cancel_active_goal           bool                Cancel goal if active?
 
-    <= goal_sent                The goal was sent.
-    <= goal_active              There is an active goal (only if cancel_active_goal is False)
-    <= failed                   Navigation send goal failed.
+    <= goal_sent        The goal was sent.
+    <= goal_active      There is an active goal (only if cancel_active_goal is False)
+    <= failed           Failed to send goal to the action server.
     """
 
     def __init__(self, action="actionlib_tutorials/Fibonacci", topic="fibonacci", input_keys=[], is_pausable=True, cancel_active_goal=False):

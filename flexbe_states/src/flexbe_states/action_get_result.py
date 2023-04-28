@@ -12,12 +12,16 @@ Created on 22/11/2021
 
 class ActionGetResult(EventState):
     """
-    Move base flex action state to retrieve the result of the running goal.
+    Generic state to get the result of a given goal running on a ROS action server.
 
-    #> current_pose     PoseStamped     The current pose of the robot.
+    -- action          string              The action class type name.
+    -- topic           string              The action topic name.
+    -- output_keys     string[]            The custom output keys. These should match the action result properties.
+    -- clear_result    bool                Whether to clear the last result or not.
 
-    <= goal_has_feedback        Retrieved the feedback.
-    <= failed                   Could not retrieve feedback from server.
+    <= goal_no_result   The current goal does not, at least yet, has a result.
+    <= goal_has_result  The current goal has a result.
+    <= failed           Failed retrieving result from server.
     """
 
     def __init__(self, action="actionlib_tutorials/Fibonacci", topic="fibonacci", output_keys = [], clear_result = True):
@@ -76,5 +80,5 @@ class ActionGetResult(EventState):
                 self._has_result = False
 
         except Exception as e:
-            Logger.logwarn("Unable to retrieve navigation result:\n%s" % str(e))
+            Logger.logwarn("Unable to retrieve result:\n%s" % str(e))
             self._failed = True
